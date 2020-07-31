@@ -82,3 +82,5 @@ display(widgets.HBox([free_count, free_button]))
 display(widgets.HBox([blocked_count, blocked_button]))
 display(widgets.HBox([prey_count, prey_button]))
 display(widgets.HBox([predator_count, predator_button]))
+
+!zip -r -q dataset.zip dataset  #ran as shell command compresses images to single file
