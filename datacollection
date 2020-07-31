@@ -1,0 +1,84 @@
+from jetbot import Robot
+import traitlets
+import ipywidgets.widgets as widgets
+from IPython.display import display
+from jetbot import Camera, bgr8_to_jpeg
+
+
+camera = Camera.instance(width=224, height=224)
+
+image = widgets.Image(format='jpeg', width=224, height=224)  # this width and height doesn't necessarily have to match the camera
+
+camera_link = traitlets.dlink((camera, 'value'), (image, 'value'), transform=bgr8_to_jpeg)
+
+import os
+
+blocked_dir = 'dataset/blocked'
+free_dir = 'dataset/free'
+predator_dir = 'dataset/predator'
+prey_dir = 'dataset/prey'
+
+
+# we have this "try/except" statement because these next functions can throw an error if the directories exist already
+try:
+    os.makedirs(free_dir)
+    os.makedirs(blocked_dir)
+    os.makedirs(predator_dir)
+    os.makedirs(prey_dir)
+except FileExistsError:
+    print('Directories not created because they already exist')
+
+button_layout = widgets.Layout(width='128px', height='64px')
+
+free_button = widgets.Button(description='add free', button_style='success', layout=button_layout)
+blocked_button = widgets.Button(description='add blocked', button_style='danger', layout=button_layout)
+
+prey_button = widgets.Button(description='add prey', button_style='success', layout=button_layout)
+predator_button = widgets.Button(description='add predator', button_style='danger', layout=button_layout)
+
+free_count = widgets.IntText(layout=button_layout, value=len(os.listdir(free_dir)))
+blocked_count = widgets.IntText(layout=button_layout, value=len(os.listdir(blocked_dir)))
+
+prey_count = widgets.IntText(layout=button_layout, value=len(os.listdir(prey_dir)))
+predator_count = widgets.IntText(layout=button_layout, value=len(os.listdir(predator_dir)))
+
+from uuid import uuid1
+
+def save_snapshot(directory):
+    image_path = os.path.join(directory, str(uuid1()) + '.jpg')
+    with open(image_path, 'wb') as f:
+        f.write(image.value)
+
+def save_free():
+    global free_dir, free_count
+    save_snapshot(free_dir)
+    free_count.value = len(os.listdir(free_dir))
+    
+def save_blocked():
+    global blocked_dir, blocked_count
+    save_snapshot(blocked_dir)
+    blocked_count.value = len(os.listdir(blocked_dir))
+    
+def save_prey():
+    global prey_dir, prey_count
+    save_snapshot(prey_dir)
+    prey_count.value = len(os.listdir(prey_dir))
+    
+def save_predator():
+    global predator_dir, predator_count
+    save_snapshot(predator_dir)
+    predator_count.value = len(os.listdir(predator_dir))
+    
+# attach the callbacks, we use a 'lambda' function to ignore the
+# parameter that the on_click event would provide to our function
+# because we don't need it.
+prey_button.on_click(lambda x: save_prey())
+predator_button.on_click(lambda x: save_predator())
+free_button.on_click(lambda x: save_free())
+blocked_button.on_click(lambda x: save_blocked())
+
+display(image)
+display(widgets.HBox([free_count, free_button]))
+display(widgets.HBox([blocked_count, blocked_button]))
+display(widgets.HBox([prey_count, prey_button]))
+display(widgets.HBox([predator_count, predator_button]))
