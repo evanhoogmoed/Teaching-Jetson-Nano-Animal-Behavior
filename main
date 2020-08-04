@@ -62,9 +62,10 @@ def update(change):
     blocked_slider.value = prob_blocked
     
     if prob_blocked < 0.5:
-        robot.forward(0.4)
+        robot.forward(0.2)
     else:
-        robot.left(0.4)
+        robot.forward(-0.4)
+        robot.left(0.2)
     
     time.sleep(0.001)
         
