@@ -7,7 +7,7 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 
 dataset = datasets.ImageFolder(
-    'dataset_pred_prey',
+    'datasetp',
     transforms.Compose([
         transforms.ColorJitter(0.1, 0.1, 0.1, 0.1),
         transforms.Resize((224, 224)),
