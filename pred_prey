@@ -1,12 +1,18 @@
 import torch
 import torchvision
+import torch.nn.functional as F
 
 model = torchvision.models.alexnet(pretrained=False)
 model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, 3)
 
-model.load_state_dict(torch.load('best_model_pred_prey.pth'))
-
+collision_model = torchvision.models.alexnet(pretrained=False)
+collision_model.classifier[6] = torch.nn.Linear(collision_model.classifier[6].in_features, 3)
+collision_model.load_state_dict(torch.load('../collision_avoidance/best_model.pth'))
 device = torch.device('cuda')
+collision_model = collision_model.to(device)
+
+model.load_state_dict(torch.load('best_model_pred_prey.pth'))
+#device = torch.device('cuda')
 model = model.to(device)
 
 import cv2
