@@ -32,16 +32,25 @@ try:
 except FileExistsError:
     print('Directories not created because they already exist') 
     
+both_dir = 'datasetp/both'
+
+try:
+    os.makedirs(none_dir)
+except FileExistsError:
+    print('Directories not created because they already exist')  
+    
  button_layout = widgets.Layout(width='128px', height='64px')
 
 
 prey_button = widgets.Button(description='add prey', button_style='success', layout=button_layout)
 predator_button = widgets.Button(description='add predator', button_style='danger', layout=button_layout)
 none_button = widgets.Button(description='add none', button_style='warning', layout=button_layout)
+both_button = widgets.Button(description='add none', button_style='default', layout=button_layout)
 
 prey_count = widgets.IntText(layout=button_layout, value=len(os.listdir(prey_dir)))
 predator_count = widgets.IntText(layout=button_layout, value=len(os.listdir(predator_dir)))
 none_count = widgets.IntText(layout=button_layout, value=len(os.listdir(none_dir)))
+both_count = widgets.IntText(layout=button_layout, value=len(os.listdir(both_dir)))
 
 from uuid import uuid1
 
@@ -65,6 +74,11 @@ def save_none():
     global none_dir, none_count
     save_snapshot(none_dir)
     none_count.value = len(os.listdir(none_dir))
+
+def save_both():
+    global both_dir, both_count
+    save_snapshot(both_dir)
+    both_count.value = len(os.listdir(both_dir))
     
 # attach the callbacks, we use a 'lambda' function to ignore the
 # parameter that the on_click event would provide to our function
@@ -72,9 +86,11 @@ def save_none():
 prey_button.on_click(lambda x: save_prey())
 predator_button.on_click(lambda x: save_predator())
 none_button.on_click(lambda x: save_none())
+both_button.on_click(lambda x: save_both())
 
 display(image)
 display(widgets.HBox([prey_count, prey_button]))
 display(widgets.HBox([predator_count, predator_button]))
 display(widgets.HBox([none_count, none_button]))
+display(widgets.HBox([both_count, both_button]))
 !zip -r -q datasetpred.zip datasetp
