@@ -34,7 +34,7 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 model = models.alexnet(pretrained=True)
-model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, 2) #2 outputs change to 4
+model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, 4) #2 outputs change to 4
 device = torch.device('cuda')
 model = model.to(device)
 
