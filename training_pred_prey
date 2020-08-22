@@ -38,7 +38,7 @@ model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, 4) #2 out
 device = torch.device('cuda')
 model = model.to(device)
 
-NUM_EPOCHS = 5
+NUM_EPOCHS = 3    #around 1hr training time
 BEST_MODEL_PATH = 'best_model_pred_prey.pth'
 best_accuracy = 0.0
 
