@@ -90,7 +90,7 @@ def update(change):
     elif prob_none > 0.5:
         robot.forward(0.2)
     
-    elif prob_none > 0.5:
+    elif prob_both > 0.4:
         time.sleep(1.0)
     
     time.sleep(0.001)
