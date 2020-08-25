@@ -3,7 +3,7 @@ import torchvision
 import torch.nn.functional as F
 
 model = torchvision.models.alexnet(pretrained=False)
-model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, 3)
+model.classifier[6] = torch.nn.Linear(model.classifier[6].in_features, 4)
 
 collision_model = torchvision.models.alexnet(pretrained=False)
 collision_model.classifier[6] = torch.nn.Linear(collision_model.classifier[6].in_features, 3)
@@ -48,8 +48,10 @@ prey_slider = widgets.FloatSlider(description='prey', min=0.0, max=1.0, orientat
 none_slider = widgets.FloatSlider(description='none', min=0.0, max=1.0, orientation='vertical',
                                         readout=True, readout_format='.4f')
 camera_link = traitlets.dlink((camera, 'value'), (image, 'value'), transform=bgr8_to_jpeg)
-
-display(widgets.HBox([image, predator_slider, prey_slider, none_slider]))
+both_slider = widgets.FloatSlider(description='both', min=0.0, max=1.0, orientation='vertical',
+                                        readout=True, readout_format='.4f')
+                                        
+display(widgets.HBox([image, predator_slider, prey_slider, none_slider, both_slider]))
 
 from jetbot import Robot
 
@@ -59,7 +61,7 @@ import torch.nn.functional as F
 import time
 
 def update(change):
-    global predator_slider, prey_slider, none_slider, robot
+    global predator_slider, prey_slider, none_slider, both_slider, robot
     x = change['new'] 
     x = preprocess(x)
     y = model(x)
@@ -70,21 +72,27 @@ def update(change):
     prob_predator = float(y.flatten()[0])
     prob_prey = float(y.flatten()[1])
     prob_none = float(y.flatten()[2])
+    prob_both = float(y.flatten()[3])
     
     predator_slider.value = prob_predator
     prey_slider.value = prob_prey
     none_slider.value = prob_none
+    both_slider.value = prob_both
+    
 
     if prob_predator > 0.5:
-        time.sleep(1.0)
-        robot.forward(-0.4)
-        robot.left(0.2)
+        robot.forward(-.5)
+        #robot.left(1.0)
         
-    else if prob_prey > 0.5:
+    elif prob_prey > 0.5:
         robot.forward(0.5)
     
-    else:
+    elif prob_none > 0.5:
         robot.forward(0.2)
+    
+    elif prob_none > 0.5:
+        time.sleep(1.0)
+    
     time.sleep(0.001)
         
 update({'new': camera.value})  # we call the function once to intialize
